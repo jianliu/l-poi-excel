@@ -1,7 +1,9 @@
-基于apach poi的excel快速读写小工具
+基于apach poi Excel读写框架的excel快速读写小工具
 ===
 ## l-poi-excel
 ### 基于poi框架实现的excel读写工具
+poi是一个开源的文档操作框架，支持且不仅支持从excel文件读取单元格数据，同时也支持写数据到excel中去，google一下，你就知道
+[poi传说门](https://github.com/apache/poi)
 在poi操作excel文件的api，包装了一层高效的api，使用者可以基于一个接口做如下事：
 * 从excel中获取每一行数据，转换为java对象（仅支持bean\pojo的转换，不支持原始类型及其封装类型，如Integer,String）
 * 将java对象转换成excel的一行,写入sheet中
