@@ -5,6 +5,7 @@ import per.liu.excel.ExcelResolver;
 import per.liu.excel.ExcelWriter;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -48,7 +49,7 @@ public class TestExcel {
 
         ExcelHelper<Data> excelHelper = new ExcelHelper<Data>();
 
-        List<Data> data =  excelHelper.readExcel(filepath, Data.class, new ExcelResolver<Data>() {
+        List<Data> data =  excelHelper.readExcel(new FileInputStream(filepath), Data.class, new ExcelResolver<Data>() {
             @Override
             public boolean resolve(Data data) {
                 data.setId(Integer.valueOf(getCellValue("ID")));

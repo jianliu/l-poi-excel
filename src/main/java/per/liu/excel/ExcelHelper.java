@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +17,7 @@ import java.util.Map;
 /**
  * Created by cdliujian1 on 2015/7/28.
  */
-public class ExcelHelper<T>{
+public class ExcelHelper<T> {
 
     /**
      * 一个sheet多少条记录，65535是poi允许的最大值
@@ -56,7 +55,7 @@ public class ExcelHelper<T>{
         this.customPageDataSize = customPageDataSize;
         this.autoCreateNewSheet = autoCreateNewSheet;
 
-     }
+    }
 
 //    @SuppressWarnings("unchecked")
 //    public Class<T> getClz() {
@@ -101,6 +100,37 @@ public class ExcelHelper<T>{
             } else {
                 workbook = WorkbookFactory.create(is);
             }
+            Sheet sheet = workbook.getSheetAt(sheetNo);
+            if (sheet == null) {
+                return null;
+            }
+            //赋值idxMap
+            resolveHeader(sheet);
+            excelResolver.setIdxMap(idxMap);
+            return genResultList(clazz, excelResolver, sheet);
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+                //no op
+            }
+        }
+    }
+
+    /**
+     * 从文件中解析excel
+     *
+     * @param is
+     * @param clazz         准备读出的对象类型class
+     * @param excelResolver 根据准备读出的对象类型 自定义一个excelResolver
+     * @param sheetNo       第几个sheet，从0开始
+     * @return
+     * @throws IOException
+     * @throws InvalidFormatException
+     */
+    public List<T> readExcel(InputStream is, Class<T> clazz, ExcelResolver<T> excelResolver, int sheetNo) throws IOException, InvalidFormatException {
+        try {
+            Workbook workbook = WorkbookFactory.create(is);
             Sheet sheet = workbook.getSheetAt(sheetNo);
             if (sheet == null) {
                 return null;
