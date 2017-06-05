@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Created by cdliujian1 on 2015/7/28.
  */
-public class ExcelHelper<T> extends GenericHelper{
+public class ExcelHelper<T>{
 
     /**
      * 一个sheet多少条记录，65535是poi允许的最大值
