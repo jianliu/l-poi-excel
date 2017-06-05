@@ -2,8 +2,13 @@
 ===
 ## l-poi-excel
 ### 基于poi框架实现的excel读写工具
+在poi操作excel文件的api，包装了一层高效的api，使用者可以基于一个接口做如下事：
+*从excel中获取每一行数据，转换为java对象（仅支持bean\pojo的转换）
+*将java对象转换成excel的一行,写入sheet中
+*内部在写文件的时候，会默认在每个excel sheet中最大写入65535行数据，超出则会自动写入到下一个sheet中。
 
 
+### 涉及到的maven依赖包
 ```java
 <dependency>
     <groupId>org.apache.poi</groupId>
