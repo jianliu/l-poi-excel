@@ -3,8 +3,8 @@
 ## l-poi-excel
 ###基于poi框架实现的excel读写工具
 
-## maven依赖
-<dependency>
+
+## <dependency>
     <groupId>org.apache.poi</groupId>
     <artifactId>poi-ooxml</artifactId>
     <version>3.7</version>
