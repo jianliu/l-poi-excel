@@ -221,9 +221,9 @@ public class ExcelHelper<T> {
     }
 
     private void writeSheet(List<T> dataList, ExcelWriter<T> excelWriter, Workbook wb, int sheetIdx) {
-        //2.创建Excel工作表对象
+        //1.创建Excel工作表对象
         Sheet sheet = wb.createSheet(MessageFormat.format(Default_Sheet_Name_Format, sheetIdx));
-        //3.创建Excel工作表的行
+        //2.创建Excel工作表的行
         int headerRowIdx = 0;
         //从第一行开始写内容
         int contentRowIdx = headerRowIdx + 1;
@@ -256,15 +256,30 @@ public class ExcelHelper<T> {
         }
     }
 
+    /**
+     * 解析单元格数据，返回list列表
+     *
+     * @param clazz
+     * @param excelTranslator
+     * @param sheet
+     * @return
+     */
     private List<T> genResultList(Class<T> clazz, ExcelResolver<T> excelTranslator, Sheet sheet) {
         List<T> results = new ArrayList<T>();
+        T obj;
+        Row row;
+        //遍历每一行，知道最好一会
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-            Row row = sheet.getRow(i);
+            row = sheet.getRow(i);
             if (row == null) {
                 continue;
             }
             try {
-                T obj = clazz.newInstance();
+                //获取用户自定义对象，如果为空，则调用
+                obj = excelTranslator.customInitialiseObj();
+                if (obj == null) {
+                    obj = clazz.newInstance();
+                }
                 excelTranslator.setRow(row);
                 if (excelTranslator.resolve(obj)) {
                     results.add(obj);

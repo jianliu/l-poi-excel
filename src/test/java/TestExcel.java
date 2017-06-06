@@ -7,9 +7,6 @@ import per.liu.excel.ExcelWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +34,6 @@ public class TestExcel {
         });
 
 
-
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
     }
 
@@ -49,15 +45,20 @@ public class TestExcel {
 
         ExcelHelper<Data> excelHelper = new ExcelHelper<Data>();
 
-        List<Data> data =  excelHelper.readExcel(new FileInputStream(filepath), Data.class, new ExcelResolver<Data>() {
+        List<Data> data = excelHelper.readExcel(new FileInputStream(filepath), Data.class, new ExcelResolver<Data>() {
             @Override
             public boolean resolve(Data data) {
                 data.setId(Integer.valueOf(getCellValue("ID")));
                 return true;
             }
-        },2);
 
-        System.out.println("size：" +data.size()+ " ms");
+            @Override
+            public Data customInitialiseObj() {
+                return new Data();
+            }
+        }, 2);
+
+        System.out.println("size：" + data.size() + " ms");
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
     }
 

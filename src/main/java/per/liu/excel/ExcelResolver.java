@@ -20,6 +20,15 @@ public abstract class ExcelResolver<T> {
     private Map<String, Integer> idxMap;
 
     /**
+     * 初始化对象
+     * override此方法来自定义生成对象的方法
+     * @return
+     */
+    public T customInitialiseObj() {
+        return null;
+    }
+
+    /**
      * 把excel里面的一行装换成一个对象
      *
      * @param obj
