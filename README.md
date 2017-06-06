@@ -33,14 +33,13 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
             data.add(i);
         }
 
-        ExcelHelper<Integer> excelHelper = new ExcelHelper<Integer>(10000, true);
+        ExcelHelper excelHelper = new ExcelHelper(10000, true);
         excelHelper.writeExcel(filepath, data, new ExcelWriter<Integer>() {
             @Override
             public void writeRow(Integer id) {
                 addCell("ID", id);
             }
         });
-
 
 
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
@@ -52,21 +51,27 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
     @Test
     public void read() throws IOException, InvalidFormatException, NoSuchFieldException, IllegalAccessException {
         String filepath = "E:" + "/" + "l-test-write.xls";
-        //  new File(filepath).delete();
+        //new File(filepath).delete();
         long start = System.currentTimeMillis();
 
-        ExcelHelper<Data> excelHelper = new ExcelHelper<Data>();
+        ExcelHelper excelHelper = new ExcelHelper();
 
-        List<Data> data =  excelHelper.readExcel(filepath, Data.class, new ExcelResolver<Data>() {
-            @Override
-            public boolean resolve(Data data) {
-                data.setId(Integer.valueOf(getCellValue("ID")));
-                return true;
-            }
-        },2);
+        List<Data> dataListFromExcel = excelHelper.readExcel(new FileInputStream(filepath), Data.class,
+                new ExcelResolver<Data>() {
+                    @Override
+                    public boolean resolve(Data data) {
+                        data.setId(Integer.valueOf(getCellValue("ID")));
+                        return true;
+                    }
 
-        System.out.println("size：" +data.size()+ " ms");
+                    //自定义生成对象的方式，不重写此方法时，默认使用反射生成对象
+                    @Override
+                    public Data customInitialiseObj() {
+                        return new Data();
+                    }
+                }, 2);
+
+        System.out.println("size：" + dataListFromExcel.size() + " ms");
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
     }
-
 ```
