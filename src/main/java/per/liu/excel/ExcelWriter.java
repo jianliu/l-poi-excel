@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * excel writer
+ * 把一个bean写到excel中，成为一行row
  * Created by cdliujian1 on 2015/7/28.
  */
 public abstract class ExcelWriter<T> {

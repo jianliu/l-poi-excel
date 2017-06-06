@@ -15,9 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * excel操作帮助类，基于本类进行read或write操作
  * Created by cdliujian1 on 2015/7/28.
  */
-public class ExcelHelper<T> {
+public class ExcelHelper {
 
     /**
      * 一个sheet多少条记录，65535是poi允许的最大值
@@ -75,7 +76,7 @@ public class ExcelHelper<T> {
      * @throws IOException
      * @throws InvalidFormatException
      */
-    public List<T> readExcel(String filename, Class<T> clazz, ExcelResolver<T> excelResolver) throws IOException, InvalidFormatException {
+    public <T> List<T> readExcel(String filename, Class<T> clazz, ExcelResolver<T> excelResolver) throws IOException, InvalidFormatException {
         return readExcel(filename, clazz, excelResolver, 0);
     }
 
@@ -90,7 +91,7 @@ public class ExcelHelper<T> {
      * @throws IOException
      * @throws InvalidFormatException
      */
-    public List<T> readExcel(String filename, Class<T> clazz, ExcelResolver<T> excelResolver, int sheetNo) throws IOException, InvalidFormatException {
+    public <T> List<T> readExcel(String filename, Class<T> clazz, ExcelResolver<T> excelResolver, int sheetNo) throws IOException, InvalidFormatException {
         InputStream is = new FileInputStream(filename);
         Workbook workbook;
         try {
@@ -118,6 +119,20 @@ public class ExcelHelper<T> {
     }
 
     /**
+     * 从文件中解析excel,第一个sheet
+     *
+     * @param is
+     * @param clazz         准备读出的对象类型class
+     * @param excelResolver 根据准备读出的对象类型 自定义一个excelResolver
+     * @return
+     * @throws IOException
+     * @throws InvalidFormatException
+     */
+    public <T> List<T> readExcel(InputStream is, Class<T> clazz, ExcelResolver<T> excelResolver) throws IOException, InvalidFormatException {
+         return readExcel(is, clazz, excelResolver, 0);
+    }
+
+    /**
      * 从文件中解析excel
      *
      * @param is
@@ -128,7 +143,7 @@ public class ExcelHelper<T> {
      * @throws IOException
      * @throws InvalidFormatException
      */
-    public List<T> readExcel(InputStream is, Class<T> clazz, ExcelResolver<T> excelResolver, int sheetNo) throws IOException, InvalidFormatException {
+    public <T> List<T> readExcel(InputStream is, Class<T> clazz, ExcelResolver<T> excelResolver, int sheetNo) throws IOException, InvalidFormatException {
         try {
             Workbook workbook = WorkbookFactory.create(is);
             Sheet sheet = workbook.getSheetAt(sheetNo);
@@ -154,7 +169,7 @@ public class ExcelHelper<T> {
      * @param filename
      * @param dataList
      */
-    public void writeExcel(String filename, List<T> dataList, ExcelWriter<T> excelWriter) {
+    public <T> void writeExcel(String filename, List<T> dataList, ExcelWriter<T> excelWriter) {
         if (dataList == null) {
             return;
         }
@@ -181,7 +196,7 @@ public class ExcelHelper<T> {
      *
      * @param dataList
      */
-    public Workbook writeExcel(List<T> dataList, ExcelWriter<T> excelWriter) {
+    public <T> Workbook writeExcel(List<T> dataList, ExcelWriter<T> excelWriter) {
         if (dataList == null) {
             return null;
         }
@@ -220,7 +235,7 @@ public class ExcelHelper<T> {
         return wb;
     }
 
-    private void writeSheet(List<T> dataList, ExcelWriter<T> excelWriter, Workbook wb, int sheetIdx) {
+    private <T> void writeSheet(List<T> dataList, ExcelWriter<T> excelWriter, Workbook wb, int sheetIdx) {
         //1.创建Excel工作表对象
         Sheet sheet = wb.createSheet(MessageFormat.format(Default_Sheet_Name_Format, sheetIdx));
         //2.创建Excel工作表的行
@@ -264,7 +279,7 @@ public class ExcelHelper<T> {
      * @param sheet
      * @return
      */
-    private List<T> genResultList(Class<T> clazz, ExcelResolver<T> excelTranslator, Sheet sheet) {
+    private <T> List<T> genResultList(Class<T> clazz, ExcelResolver<T> excelTranslator, Sheet sheet) {
         List<T> results = new ArrayList<T>();
         T obj;
         Row row;

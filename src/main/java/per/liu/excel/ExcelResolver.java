@@ -6,6 +6,8 @@ import org.apache.poi.ss.usermodel.Row;
 import java.util.Map;
 
 /**
+ * 解析器
+ * 把excel的某行读成一个bean对象
  * Created by cdliujian1 on 2015/7/28.
  */
 public abstract class ExcelResolver<T> {
