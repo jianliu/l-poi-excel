@@ -1,4 +1,4 @@
-package per.liu.excel;
+package jianliu.excel;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;

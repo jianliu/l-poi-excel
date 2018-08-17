@@ -1,4 +1,4 @@
-package per.liu.excel.annotation;
+package jianliu.excel.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

@@ -1,9 +1,9 @@
-package per.liu.excel;
+package jianliu.excel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import per.liu.excel.annotation.Column;
-import per.liu.excel.util.ExcelUtil;
+import jianliu.excel.annotation.Column;
+import jianliu.excel.util.ExcelUtil;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
