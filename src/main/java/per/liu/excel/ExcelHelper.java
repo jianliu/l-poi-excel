@@ -48,6 +48,8 @@ public class ExcelHelper {
 
     private final Map<String, Integer> idxMap = new HashMap<String, Integer>();
 
+
+
     public ExcelHelper() {
         this(null, true);
     }
@@ -129,7 +131,7 @@ public class ExcelHelper {
      * @throws InvalidFormatException
      */
     public <T> List<T> readExcel(InputStream is, Class<T> clazz, ExcelResolver<T> excelResolver) throws IOException, InvalidFormatException {
-         return readExcel(is, clazz, excelResolver, 0);
+        return readExcel(is, clazz, excelResolver, 0);
     }
 
     /**

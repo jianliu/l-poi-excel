@@ -59,7 +59,6 @@ public abstract class ExcelWriter<T> {
             //设置column宽度
             row.getSheet().setColumnWidth(idxMap.get(header), (value.toString().trim().getBytes().length) * 256);
         }
-
     }
 
     /**

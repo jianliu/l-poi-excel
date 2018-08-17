@@ -11,6 +11,9 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 * 将java对象转换成excel的一行,写入sheet中
 * 内部在写文件的时候，会默认在每个excel sheet中最大写入65535行数据，超出则会自动写入到下一个sheet中。
 
+###
+支持基于自定义代码的解析、读取
+支持基于注解的自动解析、读取,自动识别基本封装类型如Integer\String\... 和Date类型，用户可以自定义转换器
 
 ### 涉及到的maven依赖包
 ```java
@@ -21,6 +24,31 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 </dependency>
 ```
 ## 读写文件
+###实体类
+
+```java
+         /**
+          * 测试实体
+          */
+         public class Data {
+
+         //    @Column(value = "ID", order = 0)
+             private int id;
+
+             @Column(value = "ID", order = 0, typeConvertor = SimpleDataConvertor.class)
+             private SimpleData simpleData;
+
+             public Integer getId() {
+                 return id;
+             }
+
+             public void setId(Integer id) {
+                 this.id = id;
+             }
+         }
+```
+
+
 ### 写excel文件
 ```java
     @Test
@@ -28,10 +56,13 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
         String filepath = "E:" + "/" + "l-test-write.xls";
         new File(filepath).delete();
         long start = System.currentTimeMillis();
-        List<Integer> data = new ArrayList<Integer>();
-        for (int i = 0; i < 100000; i++) {
-            data.add(i);
+        List<Data> data = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            Data d = new Data();
+            d.setId(i);
+            data.add(d);
         }
+
 
         ExcelHelper excelHelper = new ExcelHelper(10000, true);
         excelHelper.writeExcel(filepath, data, new ExcelWriter<Integer>() {
@@ -41,6 +72,8 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
             }
         });
 
+        //基于注解自动写入
+        //excelHelper.writeExcel(filepath, data, new AnnotationWriter<>(Data.class));
 
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
     }
@@ -70,6 +103,11 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
                         return new Data();
                     }
                 }, 2);
+
+        //基于注解自动解析
+        //List<Data> dataListFromExcel = excelHelper.readExcel(new FileInputStream(filepath), Data.class,
+                new AnnotationResolver<>(Data.class), 0);
+
 
         System.out.println("size：" + dataListFromExcel.size() + " ms");
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
