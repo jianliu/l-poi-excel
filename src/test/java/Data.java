@@ -1,4 +1,4 @@
-import jianliu.excel.annotation.Column;
+import com.jianliu.excel.annotation.Column;
 
 /**
  * 测试实体

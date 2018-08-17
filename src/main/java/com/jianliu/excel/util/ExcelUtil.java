@@ -1,8 +1,8 @@
-package jianliu.excel.util;
+package com.jianliu.excel.util;
 
-import jianliu.excel.annotation.Column;
-import jianliu.excel.convertor.DateTypeConvertor;
-import jianliu.excel.convertor.TypeConvertor;
+import com.jianliu.excel.annotation.Column;
+import com.jianliu.excel.convertor.DateTypeConvertor;
+import com.jianliu.excel.convertor.TypeConvertor;
 
 import java.lang.reflect.Field;
 import java.util.*;

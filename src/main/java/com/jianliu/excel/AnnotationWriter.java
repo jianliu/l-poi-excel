@@ -1,9 +1,9 @@
-package jianliu.excel;
+package com.jianliu.excel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jianliu.excel.annotation.Column;
-import jianliu.excel.util.ExcelUtil;
+import com.jianliu.excel.annotation.Column;
+import com.jianliu.excel.util.ExcelUtil;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -14,21 +14,19 @@ import java.util.WeakHashMap;
 /**
  * Created by cdliujian1 on 2018/8/17.
  */
-public class AnnotationResolver<T> extends ExcelResolver<T>{
+public class AnnotationWriter<T> extends ExcelWriter<T> {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(AnnotationResolver.class);
-
-    private Class<T> targetClass;
+    private final static Logger LOGGER = LoggerFactory.getLogger(AnnotationWriter.class);
 
     private static final WeakHashMap<Class, List<Field>> ClassFieldMap = new WeakHashMap<>();
 
-    private List<Field> columnFields;
+    private Class<T> targetClass;
+
+    List<Field> columnFields;
 
     private Map<String, Column> fileAnnotationMap = new HashMap<>();
 
-    private boolean rethrow = false;
-
-    public AnnotationResolver(Class targetClass) {
+    public AnnotationWriter(Class<T> targetClass) {
         this.targetClass = targetClass;
 
         synchronized (ClassFieldMap) {
@@ -46,27 +44,19 @@ public class AnnotationResolver<T> extends ExcelResolver<T>{
 
     }
 
+
+    //    private static
+
     @Override
-    public boolean resolve(T data) throws Exception{
+    public void writeRow(T obj) {
 
-        for(Field f: columnFields){
+        for (Field f : columnFields) {
             Column column = fileAnnotationMap.get(f.getName());
-            String cellValue = getCellValue(column.value());
-            if(cellValue == null || cellValue.equals("")){
-                continue;
-            }
-
             try {
-                f.set(data, ExcelUtil.convertString(cellValue, f.getType(), column));
-            }catch (Exception e){
-                if(rethrow){
-                    throw e;
-                }
-                LOGGER.error("读取excel cell失败", e);
+                addCell(column.value(), f.get(obj).toString());
+            } catch (Exception e) {
+                LOGGER.error("设置cell失败", e);
             }
-
         }
-        return true;
-
     }
 }

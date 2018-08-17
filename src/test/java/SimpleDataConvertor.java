@@ -1,4 +1,4 @@
-import jianliu.excel.convertor.TypeConvertor;
+import com.jianliu.excel.convertor.TypeConvertor;
 
 /**
  * Created by cdliujian1 on 2018/8/17.
