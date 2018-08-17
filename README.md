@@ -11,7 +11,8 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 * 将java对象转换成excel的一行,写入sheet中
 * 内部在写文件的时候，会默认在每个excel sheet中最大写入65535行数据，超出则会自动写入到下一个sheet中。
 
-###
+### 注解功能
+
 支持基于自定义代码的解析、读取
 支持基于注解的自动解析、读取,自动识别基本封装类型如Integer\String\... 和Date类型，用户可以自定义转换器
 
@@ -56,6 +57,8 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
         String filepath = "E:" + "/" + "l-test-write.xls";
         new File(filepath).delete();
         long start = System.currentTimeMillis();
+
+        //模拟数据
         List<Data> data = new ArrayList<>();
         for (int i = 0; i < 10000; i++) {
             Data d = new Data();
@@ -65,15 +68,16 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 
 
         ExcelHelper excelHelper = new ExcelHelper(10000, true);
-        excelHelper.writeExcel(filepath, data, new ExcelWriter<Integer>() {
-            @Override
-            public void writeRow(Integer id) {
-                addCell("ID", id);
-            }
-        });
-
         //基于注解自动写入
-        //excelHelper.writeExcel(filepath, data, new AnnotationWriter<>(Data.class));
+        excelHelper.writeExcel(filepath, data, new AnnotationWriter<>(Data.class));
+
+        //手动写入
+        //  excelHelper.writeExcel(filepath, data, new ExcelWriter<Data>() {
+        //            @Override
+        //            public void writeRow(Data data) {
+        //                addCell("ID", data.getId);
+        //            }
+        //        });
 
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
     }
