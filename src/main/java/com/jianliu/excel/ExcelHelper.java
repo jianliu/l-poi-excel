@@ -139,6 +139,38 @@ public class ExcelHelper {
      *
      * @param is
      * @param clazz         准备读出的对象类型class
+     * @param sheetNo       第几个sheet，从0开始
+     * @return
+     * @throws IOException
+     * @throws InvalidFormatException
+     */
+    public <T> List<T> readExcel(InputStream is, Class<T> clazz, int sheetNo) throws IOException, InvalidFormatException {
+        try {
+            Workbook workbook = WorkbookFactory.create(is);
+            Sheet sheet = workbook.getSheetAt(sheetNo);
+            if (sheet == null) {
+                return null;
+            }
+
+            ExcelResolver excelResolver = new AnnotationResolver<T>(clazz);
+            //赋值idxMap
+            resolveHeader(sheet);
+            excelResolver.setIdxMap(idxMap);
+            return genResultList(clazz, excelResolver, sheet);
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+                //no op
+            }
+        }
+    }
+
+    /**
+     * 从文件中解析excel
+     *
+     * @param is
+     * @param clazz         准备读出的对象类型class
      * @param excelResolver 根据准备读出的对象类型 自定义一个excelResolver
      * @param sheetNo       第几个sheet，从0开始
      * @return
@@ -159,6 +191,36 @@ public class ExcelHelper {
         } finally {
             try {
                 is.close();
+            } catch (Exception e) {
+                //no op
+            }
+        }
+    }
+
+    /**
+     * 导出使用xlsx格式
+     *
+     * @param filename
+     * @param dataList
+     */
+    public <T> void writeExcel(String filename, List<T> dataList) {
+        if (dataList == null) {
+            return;
+        }
+        ExcelWriter<T> excelWriter = new AnnotationWriter<T>((Class<T>) dataList.get(0).getClass());
+
+        Workbook wb = writeExcel(dataList, excelWriter);
+        // 最后一步，将文件存到指定位置
+        FileOutputStream fout = null;
+        try {
+            fout = new FileOutputStream(filename);
+            wb.write(fout);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fout != null)
+                    fout.close();
             } catch (Exception e) {
                 //no op
             }

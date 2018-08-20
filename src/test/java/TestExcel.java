@@ -16,25 +16,36 @@ import java.util.List;
  */
 public class TestExcel {
 
+    /**
+     * windows-4 cpu cores-8 GB Memory ,use 1270ms
+     */
     @Test
     public void write() {
         String filepath = "D:" + "/" + "l-test-write.xls";
         new File(filepath).delete();
         long start = System.currentTimeMillis();
-        List<Data> data = new ArrayList<>();
+        List<Data> dataList = new ArrayList<>();
         for (int i = 0; i < 10000; i++) {
             Data d = new Data();
             d.setId(i);
-            data.add(d);
+            dataList.add(d);
         }
 
         ExcelHelper excelHelper = new ExcelHelper(10000, true);
-        excelHelper.writeExcel(filepath, data, new AnnotationWriter<>(Data.class));
+        excelHelper.writeExcel(filepath, dataList);
 
 
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
     }
 
+    /**
+     *
+     * windows-4 cpu cores-8 GB Memory ,use 439~550ms
+     * @throws IOException
+     * @throws InvalidFormatException
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
     @Test
     public void read() throws IOException, InvalidFormatException, NoSuchFieldException, IllegalAccessException {
         String filepath = "D:" + "/" + "l-test-write.xls";
@@ -58,8 +69,7 @@ public class TestExcel {
 //                    }
 //                }, 0);
 
-        List<Data> dataListFromExcel = excelHelper.readExcel(new FileInputStream(filepath), Data.class,
-                new AnnotationResolver<>(Data.class), 0);
+        List<Data> dataListFromExcel = excelHelper.readExcel(new FileInputStream(filepath), Data.class, 0);
 
         System.out.println("size：" + dataListFromExcel.size() + " ms");
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");

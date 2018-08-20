@@ -20,8 +20,8 @@ public class ExcelUtil {
         ClassTypeConvertors.put(Date.class, new DateTypeConvertor());
     }
 
-    public static void registerCustomConvertors(Class type, TypeConvertor typeConvertor){
-        if(type == null || typeConvertor == null){
+    public static void registerCustomConvertors(Class type, TypeConvertor typeConvertor) {
+        if (type == null || typeConvertor == null) {
             return;
         }
         CustomClassTypeConvertors.putIfAbsent(type, typeConvertor);
@@ -45,8 +45,13 @@ public class ExcelUtil {
             field.setAccessible(true);
         }
 
-        Collections.sort(columnFields, (o1, o2) -> Integer.compare(o1.getAnnotation(Column.class).order(),
-                o2.getAnnotation(Column.class).order()));
+        Collections.sort(columnFields, new Comparator<Field>() {
+            @Override
+            public int compare(Field o1, Field o2) {
+                return Integer.compare(o1.getAnnotation(Column.class).order(),
+                        o2.getAnnotation(Column.class).order());
+            }
+        });
 
         return columnFields;
     }
