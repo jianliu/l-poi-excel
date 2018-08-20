@@ -33,7 +33,9 @@ public class AnnotationWriter<T> extends ExcelWriter<T> {
             columnFields = ClassFieldMap.get(targetClass);
             if (columnFields == null) {
                 columnFields = ExcelUtil.getOrderColumnFields(targetClass);
-                ClassFieldMap.putIfAbsent(targetClass, columnFields);
+                if(!ClassFieldMap.containsKey(targetClass)) {
+                    ClassFieldMap.put(targetClass, columnFields);
+                }
             }
         }
 

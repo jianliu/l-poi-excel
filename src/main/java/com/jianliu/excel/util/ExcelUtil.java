@@ -7,6 +7,7 @@ import com.jianliu.excel.convertor.TypeConvertor;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by cdliujian1 on 2018/8/17.
@@ -14,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ExcelUtil {
 
     protected final static Map<Class, TypeConvertor> ClassTypeConvertors = new HashMap<>();
-    protected final static Map<Class, TypeConvertor> CustomClassTypeConvertors = new ConcurrentHashMap<>();
+    protected final static ConcurrentMap<Class, TypeConvertor> CustomClassTypeConvertors = new ConcurrentHashMap<>();
 
     static {
         ClassTypeConvertors.put(Date.class, new DateTypeConvertor());
