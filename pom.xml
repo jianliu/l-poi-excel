@@ -27,7 +27,6 @@
         <url>https://github.com/jianliu/l-poi-excel</url>
         <connection>scm:git:git@github.com:jianliu/l-poi-excel.git</connection>
         <developerConnection>scm:git:git@github.com:jianliu/l-poi-excel.git</developerConnection>
-        <tag>excel-poi-1.1</tag>
     </scm>
 
     <developers>
