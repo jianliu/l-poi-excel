@@ -6,24 +6,28 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 
 [poi传送门](https://github.com/apache/poi)
 
+此工具目前仅支持规则的excel读取和写入
+
 在poi操作excel文件的api，包装了一层高效的api，使用者可以基于一个接口做如下事：
 * 从excel中获取每一行数据，转换为java对象（仅支持bean\pojo的转换，不支持原始类型及其封装类型，如Integer,String）
 * 将java对象转换成excel的一行,写入sheet中
 * 内部在写文件的时候，会默认在每个excel sheet中最大写入65535行数据，超出则会自动写入到下一个sheet中。
+* 支持注解根据列的title自动识别列功能
 
 ### 注解功能
 
-支持基于自定义代码的解析、读取
-支持基于注解的自动解析、读取,自动识别基本封装类型如Integer\String\... 和Date类型，用户可以自定义转换器
+支持基于自定义代码的解析、读取，两行代码即可实现写入、读取
+支持基于注解的自动解析、读取,自动识别基本封装类型如Integer\String\... 和Date类型，用户可以自定义转换器，实现单个cell解析为复杂对象的功能
 
-### 涉及到的maven依赖包
+### 引入方式 maven依赖包
 ```java
 <dependency>
-    <groupId>org.apache.poi</groupId>
-    <artifactId>poi-ooxml</artifactId>
-    <version>3.7</version>
+    <groupId>com.github.jianliu</groupId>
+    <artifactId>excel-poi</artifactId>
+    <version>1.1</version>
 </dependency>
 ```
+
 ## 读写文件
 ###实体类
 
@@ -33,10 +37,10 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
           */
          public class Data {
 
-         //    @Column(value = "ID", order = 0)
+             //@Column(value = "ID", order = 0),自动转换原始类型及其封装类型、Date类型
              private int id;
 
-             @Column(value = "ID", order = 0, typeConvertor = SimpleDataConvertor.class)
+             @Column(value = "ID", order = 0, typeConvertor = SimpleDataConvertor.class) //复杂对象自定义转换器,框架会自动生成器转换器实例
              private SimpleData simpleData;
 
              public Integer getId() {
@@ -51,6 +55,9 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 
 
 ### 写excel文件
+
+通过注解，两行代码即可写入数据列表到excel中
+
 ```java
     @Test
     public void write() {
@@ -69,7 +76,7 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 
         ExcelHelper excelHelper = new ExcelHelper(10000, true);
         //基于注解自动写入
-        excelHelper.writeExcel(filepath, data, new AnnotationWriter<>(Data.class));
+        excelHelper.writeExcel(filepath, data);
 
         //手动写入
         //  excelHelper.writeExcel(filepath, data, new ExcelWriter<Data>() {
@@ -84,6 +91,9 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 ```
 
 ### 读excel文件
+
+基于注解，两行代码即可获取数据列表
+
 ```java
     @Test
     public void read() throws IOException, InvalidFormatException, NoSuchFieldException, IllegalAccessException {
@@ -92,7 +102,11 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
         long start = System.currentTimeMillis();
 
         ExcelHelper excelHelper = new ExcelHelper();
+        //基于注解自动解析
+        List<Data> dataListFromExcel = excelHelper.readExcel(new FileInputStream(filepath), Data.class, 0);
 
+        //自定义Resolver，手动对应列，可以在不依赖任何转换器的情况下为Data赋值
+        /**
         List<Data> dataListFromExcel = excelHelper.readExcel(new FileInputStream(filepath), Data.class,
                 new ExcelResolver<Data>() {
                     @Override
@@ -108,10 +122,7 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
                     }
                 }, 2);
 
-        //基于注解自动解析
-        //List<Data> dataListFromExcel = excelHelper.readExcel(new FileInputStream(filepath), Data.class,
-                new AnnotationResolver<>(Data.class), 0);
-
+        */
 
         System.out.println("size：" + dataListFromExcel.size() + " ms");
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
