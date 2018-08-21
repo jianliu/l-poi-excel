@@ -39,7 +39,8 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
              //@Column(value = "ID", order = 0),自动转换原始类型及其封装类型、Date类型
              private int id;
 
-             @Column(value = "ID", order = 0, typeConvertor = SimpleDataConvertor.class) //复杂对象自定义转换器,框架会自动生成器转换器实例
+             //复杂对象自定义转换器,框架会自动生成器转换器实例
+             @Column(value = "ID", order = 0, typeConvertor = SimpleDataConvertor.class) 
              private SimpleData simpleData;
 
              public Integer getId() {
