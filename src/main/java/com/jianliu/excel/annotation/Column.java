@@ -1,5 +1,7 @@
 package com.jianliu.excel.annotation;
 
+import com.jianliu.excel.convertor.TypeConvertor;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -28,8 +30,13 @@ public @interface Column {
     /**
      * 自定义类型转换器，将cell中的value转换为某个对象
      */
-    Class<?> typeConvertor() default Object.class;
+    Class<? extends TypeConvertor> typeConvertor() default TypeConvertor.class;
 
+    /**
+     * 转换器的pattern
+     * @return
+     */
+    String pattern() default "";
 
 }
 

@@ -49,7 +49,7 @@ public class AnnotationResolver<T> extends ExcelResolver<T>{
     }
 
     @Override
-    public boolean resolve(T data) throws Exception{
+    public boolean resolve(T data, ConvertContext convertContext) throws Exception{
 
         for(Field f: columnFields){
             Column column = fileAnnotationMap.get(f.getName());
@@ -57,9 +57,9 @@ public class AnnotationResolver<T> extends ExcelResolver<T>{
             if(cellValue == null || cellValue.equals("")){
                 continue;
             }
-
+            convertContext.setColumn(column);
             try {
-                f.set(data, ExcelUtil.convertString(cellValue, f.getType(), column));
+                f.set(data, ExcelUtil.convertFromString(cellValue, f.getType(), convertContext));
             }catch (Exception e){
                 if(rethrow){
                     throw e;

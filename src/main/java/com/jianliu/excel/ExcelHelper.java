@@ -48,19 +48,27 @@ public class ExcelHelper {
 
     private final Map<String, Integer> idxMap = new HashMap<String, Integer>();
 
-
+    /**
+     * read时的自定义sheetNo
+     */
+    private int targetSheetIdxR;
 
     public ExcelHelper() {
         this(null, true);
     }
 
     public ExcelHelper(Integer customPageDataSize, boolean autoCreateNewSheet) {
-        this.customPageDataSize = customPageDataSize;
+        this.customPageDataSize = customPageDataSize != null ? customPageDataSize : Default_PAGE_DATA_SIZE;
         this.autoCreateNewSheet = autoCreateNewSheet;
 
     }
 
-//    @SuppressWarnings("unchecked")
+    public void setTargetSheetIdxR(int targetSheetIdxR) {
+        this.targetSheetIdxR = targetSheetIdxR;
+    }
+
+
+    //    @SuppressWarnings("unchecked")
 //    public Class<T> getClz() {
 //        if (tClass == null) {
 //            tClass = (Class<T>) (((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
@@ -138,16 +146,15 @@ public class ExcelHelper {
      * 从文件中解析excel
      *
      * @param is
-     * @param clazz         准备读出的对象类型class
-     * @param sheetNo       第几个sheet，从0开始
+     * @param clazz   准备读出的对象类型class
      * @return
      * @throws IOException
      * @throws InvalidFormatException
      */
-    public <T> List<T> readExcel(InputStream is, Class<T> clazz, int sheetNo) throws IOException, InvalidFormatException {
+    public <T> List<T> readExcel(InputStream is, Class<T> clazz) throws IOException, InvalidFormatException {
         try {
             Workbook workbook = WorkbookFactory.create(is);
-            Sheet sheet = workbook.getSheetAt(sheetNo);
+            Sheet sheet = workbook.getSheetAt(this.targetSheetIdxR);
             if (sheet == null) {
                 return null;
             }
@@ -199,7 +206,7 @@ public class ExcelHelper {
 
     /**
      * 导出使用xlsx格式
-     *
+     * 使用AnnotationWriter来写excel
      * @param filename
      * @param dataList
      */
@@ -268,10 +275,6 @@ public class ExcelHelper {
         Workbook wb = new HSSFWorkbook();
         int sheetIdx = 1;
 
-        if (customPageDataSize == null) {
-            customPageDataSize = Default_PAGE_DATA_SIZE;
-        }
-
         boolean needMoreSheet = dataList.size() > customPageDataSize;
 
         if (!needMoreSheet) {
@@ -307,9 +310,10 @@ public class ExcelHelper {
         //从第一行开始写内容
         int contentRowIdx = headerRowIdx + 1;
         //从第一行开始写数据
+        ConvertContext convertContext = new ConvertContext();
         for (T data : dataList) {
             excelWriter.setRow(sheet.createRow(contentRowIdx));
-            excelWriter.writeRow(data);
+            excelWriter.writeRow(data, convertContext);
             contentRowIdx++;
         }
         //最后写header
@@ -347,6 +351,9 @@ public class ExcelHelper {
         List<T> results = new ArrayList<T>();
         T obj;
         Row row;
+
+        ConvertContext convertContext = new ConvertContext();
+
         //遍历每一行，知道最好一会
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             row = sheet.getRow(i);
@@ -360,7 +367,7 @@ public class ExcelHelper {
                     obj = clazz.newInstance();
                 }
                 excelTranslator.setRow(row);
-                if (excelTranslator.resolve(obj)) {
+                if (excelTranslator.resolve(obj, convertContext)) {
                     results.add(obj);
                 }
             } catch (Exception e) {

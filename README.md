@@ -20,7 +20,7 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 
 ### 注解功能
 * 支持基于自定义代码的解析、读取，两行代码即可实现写入、读取 
-* 支持基于注解的自动解析、读取,自动识别基本封装类型如Integer\String\... 和Date类型，用户可以自定义转换器，实现单个cell解析为复杂对象的功能  
+* 支持基于注解的自动解析、读取,自动识别基本封装类型如Integer\String\... 和Date类型，用户可以自定义转换器，实现单个cell解析为复杂对象的功能或控制指定类型  
 
 ### 引入方式 maven依赖包
 ```java
@@ -32,7 +32,41 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 ```
 
 ## 读写文件
-实体类
+
+注解
+
+    /**
+     * 标识field可以写入excel或可以从excel中获取值
+     * Created by cdliujian1 on 2018/8/17.
+     */
+    @Target({FIELD})
+    @Retention(RUNTIME)
+    public @interface Column {
+        /**
+         * 列名称
+         */
+        String value() default "";
+    
+        /**
+         * 排序编号，调用Integer.compare
+         *
+         * @return
+         */
+        int order() default 0;
+    
+        /**
+         * 自定义类型转换器，将cell中的value转换为某个对象
+         */
+        Class<? extends TypeConvertor> typeConvertor() default TypeConvertor.class;
+    
+        /**
+         * 转换器的pattern,如日期格式，转换器内部可通过ConvertContext获取此pattern
+         * @return
+         */
+        String pattern() default "";
+    
+    }
+
 
 ```java
          /**
@@ -40,20 +74,18 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
           */
          public class Data {
 
-             //@Column(value = "ID", order = 0),自动转换原始类型及其封装类型、Date类型
-             private int id;
-
-             //复杂对象自定义转换器,框架会自动生成器转换器实例
-             @Column(value = "ID", order = 0, typeConvertor = SimpleDataConvertor.class) 
-             private SimpleData simpleData;
-
-             public Integer getId() {
-                 return id;
-             }
-
-             public void setId(Integer id) {
-                 this.id = id;
-             }
+                 @Column(value = "ID")
+                 private int id;
+             
+                 @Column(value = "code")
+                 private double code;
+             
+                 @Column(value = "日期", typeConvertor = DateTypeConvertor.class, pattern = "yyyy-MM-dd HH:mm")
+                 private Date date;
+             
+             
+                 @Column(value = "Simple", typeConvertor = SimpleDataConvertor.class)
+                 private SimpleData simpleData;
          }
 ```
 
@@ -74,6 +106,8 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
         for (int i = 0; i < 10000; i++) {
             Data d = new Data();
             d.setId(i);
+            d.setCode(i *1.0d + 0.01d);
+            d.setDate(new Date());
             data.add(d);
         }
 
@@ -82,15 +116,15 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
         //基于注解自动写入
         excelHelper.writeExcel(filepath, data);
 
-        //手动写入
-        //  excelHelper.writeExcel(filepath, data, new ExcelWriter<Data>() {
-        //            @Override
-        //            public void writeRow(Data data) {
-        //                addCell("ID", data.getId);
-        //            }
-        //        });
-
         System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
+                //手动写入
+                //  excelHelper.writeExcel(filepath, data, new ExcelWriter<Data>() {
+                //            @Override
+                //            public void writeRow(Data data) {
+                //                addCell("ID", data.getId);
+                //            }
+                //        });
+
     }
 ```
 
@@ -108,6 +142,10 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
         ExcelHelper excelHelper = new ExcelHelper();
         //基于注解自动解析
         List<Data> dataListFromExcel = excelHelper.readExcel(new FileInputStream(filepath), Data.class, 0);
+        
+        
+        System.out.println("size：" + dataListFromExcel.size() + " ms");
+        System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
 
         //自定义Resolver，手动对应列，可以在不依赖任何转换器的情况下为Data赋值
         /**
@@ -128,7 +166,5 @@ poi是一个开源的文档操作框架，支持且不仅支持从excel文件读
 
         */
 
-        System.out.println("size：" + dataListFromExcel.size() + " ms");
-        System.out.println("共耗时：" + (System.currentTimeMillis() - start) + " ms");
     }
 ```

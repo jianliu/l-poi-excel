@@ -40,7 +40,7 @@ public abstract class ExcelWriter<T> {
      *
      * @param obj
      */
-    public abstract void writeRow(T obj);
+    public abstract void writeRow(T obj, ConvertContext convertContext);
 
     /**
      * @param header excel的列标题，组件内部会根据header找到对应的列位置，然后将value赋值进去

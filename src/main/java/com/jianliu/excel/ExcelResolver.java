@@ -36,7 +36,7 @@ public abstract class ExcelResolver<T> {
      * @param obj
      * @return true 表示这行有效，会被添加到返回的list，反之这一行会被丢弃
      */
-    public abstract boolean resolve(T obj) throws Exception;
+    public abstract boolean resolve(T obj, ConvertContext convertContext) throws Exception;
 
 
     /**
